@@ -66,7 +66,6 @@ node {
        parallelExecutions["exec2"] = {
             build job: 'doNothing'       
        }
-    }
     parallel parallelExecutions
 
        //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
