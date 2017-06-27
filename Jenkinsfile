@@ -121,7 +121,7 @@ node {
    }
     
    stage('Functional tests'){
-      build job: 'UFT Test'
+      build job: 'UFT_Test'
    }
     
    stage('Performance tests'){
