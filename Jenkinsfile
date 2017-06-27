@@ -46,78 +46,35 @@ node {
    //checkpoint 'before Create VM & Deploy App'
     
    stage('Create VM & Deploy App'){
-       //input id: 'Wait-for-manual-continue-0', message: 'Waiting for manual continue' 
+            // in this array we'll place the jobs that we wish to run
        
-       //to synchronize jenkins with oo-central we need to create a webhook that only lets the pipeline continue when oo-flow is ready
-       def hook
-       hook = registerWebhook()
+       def parallelExecutions = [:]
+
+            //running the job 4 times concurrently
+            //the dummy parameter is for preventing mutation of the parameter before the execution of the closure.
+            //we have to assign it outside the closure or it will run the job multiple times with the same parameter "4"
+            //and jenkins will unite them into a single run of the job
+
+        parallelExecutions["exec1"] = {
+            //Parameters:
+            //param1 : an example string parameter for the triggered job.
+            //dummy: a parameter used to prevent triggering the job with the same parameters value.
+            //       this parameter has to accept a different value each time the job is triggered.
+            build job: 'deploy_VM_vSphere_Job', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip]]
+        }
        
-       //the oo-flow gets the url of the webhook as parameter so it cann call the url when ready
-       build job: 'oo_create_runner_vm_from_template', parameters: [[$class: 'StringParameterValue', name: 'hook_url', value: hook.getURL()],[$class: 'StringParameterValue', name: 'vmName', value: vmName],[$class: 'StringParameterValue', name: 'IP_new', value: ip],[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
-           
-       //wait for the webhook url to be called
-       echo "Waiting for POST to ${hook.getURL()}"
-       
-       def data
-       data = waitForWebhook hook
-       
-       def str
-       str = data.split('&')
-       
-       def messageStr
-       messageStr = str[0].split('=')
-       
-       def statusStr
-       statusStr = str[1].split('=')
-       
-       //to decide wether the oo-flow was finished successfull we evaluate a return parameter
-       if( statusStr[1].equals("success")) { 
-           echo "Webhook was called, VM was removed succesfully. Message: ${messageStr[1]}"
-           
-           build job: 'deployPetclinicDockerSSH', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip]]
-       }else{
-           
-           //when building the environment fails we try to clean up, if this fails there probably was no maschine created which had to be removed
-           echo "Webhook was called, VM was removed NOT succesfully. Message: ${messageStr[1]}"
-           
-           //again synchronize jenkins with oo-flow
-           def hook3
-           hook3 = registerWebhook()
-
-           build job: 'oo_remove_runner_vm', parameters: [[$class: 'StringParameterValue', name: 'hook_url', value: hook3.getURL()],[$class: 'StringParameterValue', name: 'vmName', value: vmName],[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
-
-           echo "Waiting for POST to ${hook3.getURL()}"
-
-           def data3
-           data3 = waitForWebhook hook3
-
-           def str3
-           str3 = data3.split('&')
-
-           def messageStr3
-           messageStr3 = str3[0].split('=')
-
-           def statusStr3
-           statusStr3 = str3[1].split('=')
-
-           if( statusStr3[1].equals("success")) { 
-               echo "Webhook was called, VM was removed succesfully. Message: ${messageStr3[1]}"
-               //quit the pipleine forcefully as the parent step failed
-               sh "exit 1"
-           }else{
-               echo "Webhook was called, VM was removed NOT succesfully. Message: ${messageStr3[1]}. The VM might NOT have been removed from system!"
-               //quit the pipleine forcefully as this step and the parent step failed
-               sh "exit 1"
-           }
+       parallelExecutions["exec2"] = {
+            build job: 'doNothing'       
        }
        
+       
+    }
+    parallel branches
+
        //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
        //sh 'ssh administrator@172.16.20.93 "nohup java -jar petclinic-1.0.0.jar &"'
        
-       //input id: 'Wait-for-manual-continue-1', message: 'Waiting for manual continue' 
-       timeout(60) {
-       }
-       
+       //input id: 'Wait-for-manual-continue-1', message: 'Waiting for manual continue'        
    }
     
    stage('Functional tests'){
@@ -125,6 +82,8 @@ node {
    }
     
    stage('Performance tests'){
+       
+       build job: 'Loadrunner_Job_mini'
        build job: 'PerfromanceCenter_Job_25User'
      
    }
