@@ -115,6 +115,9 @@ node {
        //sh 'ssh administrator@172.16.20.93 "nohup java -jar petclinic-1.0.0.jar &"'
        
        //input id: 'Wait-for-manual-continue-1', message: 'Waiting for manual continue' 
+       timeout(60) {
+       }
+       
    }
     
    stage('Functional tests'){
