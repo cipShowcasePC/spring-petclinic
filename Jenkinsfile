@@ -66,10 +66,8 @@ node {
        parallelExecutions["exec2"] = {
             build job: 'doNothing'       
        }
-       
-       
     }
-    parallel branches
+    parallel parallelExecutions
 
        //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
        //sh 'ssh administrator@172.16.20.93 "nohup java -jar petclinic-1.0.0.jar &"'
@@ -79,13 +77,13 @@ node {
     
    stage('Functional tests'){
       build job: 'UFT_Job'
+      build job: 'LeanFT_ALM_Job'
    }
     
    stage('Performance tests'){
        
        build job: 'Loadrunner_Job_mini'
-       build job: 'PerfromanceCenter_Job_25User'
-     
+       build job: 'PerformanceCenter_Job'   
    }
     
    stage('Clean up testenvironment'){
@@ -116,6 +114,5 @@ node {
        }else{
            echo "Webhook was called, VM was removed NOT succesfully. Message: ${messageStr2[1]}"
        }
-
    }
 }
