@@ -7,7 +7,7 @@ node {
     vmName = "Debian-Runner-${BUILD_NUMBER}-TJ"
        
     def ip
-    ip = "172.16.20.92"
+    ip = "172.16.20.159"
     
     stage('Preparation') {
         //fetch git repo, and get new files
@@ -118,11 +118,11 @@ node {
    }
     
    stage('Functional tests'){
-      //build job: 'UFT Test'
+      build job: 'UFT Test'
    }
     
    stage('Performance tests'){
-       //build job: 'LR_Test_Job_2'
+       build job: 'PerfromanceCenter_Job_25User'
      
    }
     
