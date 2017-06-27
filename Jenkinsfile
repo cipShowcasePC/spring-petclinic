@@ -60,7 +60,7 @@ node {
             //param1 : an example string parameter for the triggered job.
             //dummy: a parameter used to prevent triggering the job with the same parameters value.
             //       this parameter has to accept a different value each time the job is triggered.
-            build job: 'deploy_VM_vSphere_Job', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip]]
+            build job: 'deploy_VM_vSphere_Job', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip],[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
         }
        
        parallelExecutions["exec2"] = {
