@@ -77,8 +77,8 @@ node {
    }
     
    stage('Functional tests'){
-      build job: 'UFT_Job'
-      build job: 'LeanFT_ALM_Job'
+       build job: 'LeanFT_ALM_Job'
+       //build job: 'UFT_Job'
    }
     
    stage('Performance tests'){
