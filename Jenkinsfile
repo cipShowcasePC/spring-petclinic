@@ -73,6 +73,11 @@ node {
            // configure VM, upload IP, get Petclinic and deploy Petclinic
             build job: 'Azure_pipe'
         }
+       parallelExecutions["exec3"] = {
+           // On new Azure VM 
+           // install Selenium on port 4444
+            build job: 'Azure_Selenium'
+        }
     parallel parallelExecutions
 
        //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
