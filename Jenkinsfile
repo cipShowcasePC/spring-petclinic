@@ -37,10 +37,15 @@ node {
         
         //build docker image with tag petclinic_alpine
         sh 'docker build -t petclinic_alpine .'
-
+        
         //retag image to relate it to local repo | push it to the repository
         sh 'docker tag petclinic_alpine 172.16.20.157:8082/petclinic_alpine'
         sh 'docker push 172.16.20.157:8082/petclinic_alpine'
+        
+        //retag image to relate it to dockerhub repo | push it to the repository
+        sh 'docker login -u cipshowcasepc -p password'
+        sh 'docker tag petclinic_alpine cipshowcasepc/petclinic-docker-images'
+        sh 'docker push cipshowcasepc/petclinic-docker-images'
    }
     
    //checkpoint 'before Create VM & Deploy App'
