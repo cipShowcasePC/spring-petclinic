@@ -66,10 +66,8 @@ node {
        parallelExecutions["exec2"] = {
            // On new Azure VM 
            // configure VM, upload IP, get Petclinic and deploy Petclinic
-            build job: 'Azure_get_IP'
-            build job: 'Azure_get_Pet'
-            build job: 'Azure_deploy_Pet'       
-       }
+            build job: 'Azure_pipe'
+        }
     parallel parallelExecutions
 
        //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
