@@ -64,7 +64,11 @@ node {
         }
        
        parallelExecutions["exec2"] = {
-            build job: 'doNothing'       
+           // On new Azure VM 
+           // configure VM, upload IP, get Petclinic and deploy Petclinic
+            build job: 'Azure_get_IP'
+            build job: 'Azure_get_Pet'
+            build job: 'Azure_deploy_Pet'       
        }
     parallel parallelExecutions
 
