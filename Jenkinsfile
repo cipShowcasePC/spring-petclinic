@@ -116,4 +116,7 @@ node {
            echo "Webhook was called, VM was removed NOT succesfully. Message: ${messageStr2[1]}"
        }
    }
+    stage('Deploy to Prod'){
+        build job: 'oo_deploy_petclinic_via_csa', parameters: [[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
+    }
 }
