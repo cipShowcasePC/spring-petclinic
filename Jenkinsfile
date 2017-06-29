@@ -85,6 +85,8 @@ node {
        
        //input id: 'Wait-for-manual-continue-1', message: 'Waiting for manual continue'        
    }
+   
+   input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
     
    stage('Functional tests'){
        build job: 'LeanFT_ALM_Job'
