@@ -48,25 +48,18 @@ node {
         sh 'docker push cipshowcasepc/petclinic-docker-images'
    }
     
-   //checkpoint 'before Create VM & Deploy App'
-    
    stage('Create VM & Deploy App'){
-            // in this array we'll place the jobs that we wish to run
-       
+        
+       // in this array we'll place the jobs that we wish to run
        def parallelExecutions = [:]
 
-            //running the job 4 times concurrently
-            //the dummy parameter is for preventing mutation of the parameter before the execution of the closure.
-            //we have to assign it outside the closure or it will run the job multiple times with the same parameter "4"
-            //and jenkins will unite them into a single run of the job
-
-        parallelExecutions["exec1"] = {
+       parallelExecutions["exec1"] = {
             //Parameters:
             //param1 : an example string parameter for the triggered job.
             //dummy: a parameter used to prevent triggering the job with the same parameters value.
             //       this parameter has to accept a different value each time the job is triggered.
             build job: 'deploy_VM_vSphere_Job', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip],[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
-        }
+       }
        
        parallelExecutions["exec2"] = {
            // On new Azure VM 
@@ -89,14 +82,14 @@ node {
    input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
     
    stage('Functional tests'){
-       build job: 'LeanFT_ALM_Job'
-       build job: 'UFT_Job'
+       build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       build job: 'UFT_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
    }
     
    stage('Performance tests'){
        
-       build job: 'Loadrunner_Job_mini'
-       build job: 'PerformanceCenter_Job'   
+       build job: 'Loadrunner_Job_mini', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       build job: 'PerformanceCenter_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]   
    }
     
    stage('Clean up testenvironment'){
