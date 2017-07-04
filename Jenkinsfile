@@ -80,6 +80,7 @@ node {
    stage('Functional tests'){
        build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
        build job: 'UFT_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       build job: 'BPT_ALM_Test', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
    }
     
    stage('Performance tests'){
