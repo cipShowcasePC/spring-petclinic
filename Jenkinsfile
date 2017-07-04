@@ -50,36 +50,32 @@ node {
     
    stage('Create VM & Deploy App'){
         
-       // in this array we'll place the jobs that we wish to run
+       // at this point the pipeline will split into 3 parallel executions 
        def parallelExecutions = [:]
 
        parallelExecutions["exec1"] = {
-            //Parameters:
-            //param1 : an example string parameter for the triggered job.
-            //dummy: a parameter used to prevent triggering the job with the same parameters value.
-            //       this parameter has to accept a different value each time the job is triggered.
+            //parallel execution branch 1, which will create a vSphere VM, configure it and deploy the petclinic via docker afterwards
             build job: 'deploy_VM_vSphere_Job', parameters: [[$class: 'StringParameterValue', name: 'ip', value: ip],[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
        }
        
        parallelExecutions["exec2"] = {
+           // parallel execution branch 2
            // On new Azure VM 
            // configure VM, upload IP, get Petclinic and deploy Petclinic
             build job: 'Azure_pipe'
         }
        parallelExecutions["exec3"] = {
+           // parallel execution branch 3
            // On new Azure VM 
            // install Selenium on port 4444
             build job: 'Azure_Selenium'
         }
     parallel parallelExecutions
-
-       //sh 'ssh administrator@172.16.20.93 "rm -f petclinic-1.0.0.jar; wget http://172.16.20.92:8081/repository/Jenkins-Repo/de/proficom/cdp/petclinic/1.0.0/petclinic-1.0.0.jar; ls"'
-       //sh 'ssh administrator@172.16.20.93 "nohup java -jar petclinic-1.0.0.jar &"'
        
-       //input id: 'Wait-for-manual-continue-1', message: 'Waiting for manual continue'        
    }
    
-   input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
+   // this input can be uncommented to make the pipeline stop at this point of execution and only continue after human input
+   // input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
     
    stage('Functional tests'){
        build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
@@ -87,22 +83,26 @@ node {
    }
     
    stage('Performance tests'){
-       
        build job: 'Loadrunner_Job_mini', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
        build job: 'PerformanceCenter_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]   
    }
     
    stage('Clean up testenvironment'){
+       //this input can be uncommented to make the pipeline stop at this point of execution and only continue after human input
        //input id: 'Wait-for-manual-continue-2', message: 'Waiting for manual continue' 
        
-       //synchronize jenkins with oo-flow
+       //to synchronize jenkins with oo-flow after processing the automated executions webhooks will be used
        def hook2
        hook2 = registerWebhook()
-   
+        
+       // job will be called handing over the webhook's url so the oo-flow is able to do the callback operation
        build job: 'oo_remove_runner_vm', parameters: [[$class: 'StringParameterValue', name: 'hook_url', value: hook2.getURL()],[$class: 'StringParameterValue', name: 'vmName', value: vmName],[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
        
+       // console output to show pipeline ios wating for webhook to be called
        echo "Waiting for POST to ${hook2.getURL()}"
        
+       // analysing the return values within the http-Request
+       // data is submitted in the form: "messageName=messageText&statusname=statusText"
        def data2
        data2 = waitForWebhook hook2
        
@@ -122,6 +122,7 @@ node {
        }
    }
     stage('Deploy to Prod'){
+        //calling job that will call oo flow that will deploy application to "prod machines"
         build job: 'oo_deploy_petclinic_via_csa', parameters: [[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
     }
 }
