@@ -5,9 +5,14 @@ node {
     
     def vmName
     vmName = "Debian-Runner-${BUILD_NUMBER}-TJ"
-       
+    
+    //this ip is used for Test-VM
     def ip
     ip = "172.16.20.159"
+    
+    //this ip is used for Prod-VM
+    def prod_ip
+    prod_ip = "172.16.20.116"
     
     stage('Preparation') {
         //fetch git repo, and get new files
@@ -124,6 +129,6 @@ node {
    }
     stage('Deploy to Prod'){
         //calling job that will call oo flow that will deploy application to "prod machines"
-        build job: 'oo_deploy_petclinic_via_csa', parameters: [[$class: 'StringParameterValue', name: 'pipelineBuildNumber', value: BUILD_NUMBER]]
+        build job: 'oo_deploy_petclinic_via_csa', parameters: [[$class: 'StringParameterValue', name: 'pipelineNumber', value: BUILD_NUMBER],[$class: 'StringParameterValue', name: 'vmIp', value: prod_ip]]
     }
 }
