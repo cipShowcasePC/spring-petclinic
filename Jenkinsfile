@@ -83,7 +83,7 @@ node {
    // input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
     
    stage('Functional tests'){
-       sleep: 60 SECONDS
+        sleep time: 60, unit: 'SECONDS' 
        //commented due to problems with license of uft
        //build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
        //build job: 'UFT_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
