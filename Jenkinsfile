@@ -83,9 +83,10 @@ node {
    // input id: 'Wait-for-manual-continue-1', message: 'Test-VM have been created, continoue with tests after manual continue' 
     
    stage('Functional tests'){
-       build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
-       build job: 'UFT_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
-       build job: 'BPT_ALM_Test', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       //commented due to problems with license of uft
+       //build job: 'LeanFT_ALM_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       //build job: 'UFT_Job', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
+       //build job: 'BPT_ALM_Test', parameters: [[$class: 'StringParameterValue', name: 'vmName', value: vmName]]
    }
     
    stage('Performance tests'){
