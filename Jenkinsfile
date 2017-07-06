@@ -16,7 +16,7 @@ node {
     
     stage('Preparation') {
         //fetch git repo, and get new files
-        git url:'https://github.com/hfo/spring-petclinic.git'
+        git url:'https://github.com/cipShowcasePC/spring-petclinic.git'
     }
     
     stage('Build&Upload Maven Artifact(jar)') {
