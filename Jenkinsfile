@@ -12,7 +12,7 @@ node {
     
     //this ip is used for Prod-VM
     def prod_ip
-    prod_ip = "172.16.20.116"
+    prod_ip = "172.16.20.92"
     
     stage('Preparation') {
         //fetch git repo, and get new files
